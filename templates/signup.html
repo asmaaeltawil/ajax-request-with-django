@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<span id="user_error" style="display: none;"></span>
+  <form method="post" data-validate-username-url="{% url 'validate_username'%}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign up</button>
+  </form>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $("#id_username").change(function(){
+       var username =$(this).val() ;
+       var form = $(this).closest("form");
+       $.ajax({
+           url:form.attr("data-validate-username-url"),
+           data:form.serialize(),
+           dataType:'json',
+           success: function(data){
+               if (data.is_taken){
+
+                   $("#user_error").text(data.error_message);
+                   $("#user_error").css("display","block");
+               }
+               else{
+                $("#user_error").css("display","none");
+               }
+               
+           }
+
+       });
+    });
+</script>
+
+    {% endblock %}
